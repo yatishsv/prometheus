@@ -1,27 +1,37 @@
-pipeline {
-    agent { dockerfile true }
-    stages {
-        stage('Build') {
-            steps {
-                echo 'Building..'
-                sh """
-                    docker build yati1710/prometheus
-                """
-            }
-        }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-            }
-        }
-        stage('Publish') {
-            when { branch 'master' }
-            steps {
-                sh """
-                    docker login -u y4yatish -p @dhct.546 docker.y4yatish
-                    docker push yati1710/prometheus
-                """
-            }
-        }
-    }
+pipeline { 
+   environment { 
+       registry = "yati1710/prometheus" 
+       registryCredential = 'docker-hub' 
+       dockerImage = '' 
+   }
+   agent any 
+   stages { 
+       stage('Cloning our Git') { 
+          steps { 
+              git 'https://github.com/y4yatish/prometheus.git' 
+          }
+      } 
+      stage('Building our image') { 
+          steps { 
+              script { 
+                  dockerImage = docker.build registry + ":$BUILD_NUMBER" 
+              }
+          } 
+      }
+      stage('Deploy our image') { 
+          steps { 
+              script { 
+                  docker.withRegistry( '', registryCredential ) { 
+                      dockerImage.push() 
+                  }
+              } 
+          }
+      } 
+      stage('Cleaning up') { 
+          steps { 
+              sh "docker rmi $registry:$BUILD_NUMBER" 
+          }
+      } 
+  }
+
 }
