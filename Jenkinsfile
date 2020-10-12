@@ -5,7 +5,9 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                docker build yati1710/prometheus
+                sh """
+                    docker build yati1710/prometheus
+                """
             }
         }
         stage('Test') {
