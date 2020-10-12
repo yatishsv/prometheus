@@ -5,6 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
+                docker build yati1710/prometheus
             }
         }
         stage('Test') {
@@ -12,9 +13,13 @@ pipeline {
                 echo 'Testing..'
             }
         }
-        stage('Deploy') {
+        stage('Publish') {
+            when { branch 'master' }
             steps {
-                echo 'Deploying....'
+                sh """
+                    docker login -u y4yatish -p @dhct.546 docker.y4yatish
+                    docker push yati1710/prometheus
+                """
             }
         }
     }
