@@ -27,3 +27,9 @@ scrape_configs:
 
     static_configs:
     - targets: ['localhost:9090']
+  - job_name: 'node'
+    ec2_sd_configs:
+      - region: eu-west-1
+        access_key: AKIA5JDMGIWO5SESB6C3
+        secret_key: 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
+        port: 9100
